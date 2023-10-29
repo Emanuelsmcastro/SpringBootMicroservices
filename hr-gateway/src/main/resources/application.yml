@@ -1,0 +1,6 @@
+server:
+  port: 8765
+  
+spring:
+  application:
+    name: hr-gateway
