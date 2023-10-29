@@ -19,6 +19,13 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 5s
+      default-filters:
+        - RemoveRequestHeader=Cookie
+        - RemoveRequestHeader=Set-Cookie
+        - RemoveRequestHeader=Authorization
 
 eureka:
   client:
