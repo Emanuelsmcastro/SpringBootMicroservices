@@ -4,6 +4,17 @@ server:
 spring:
   application:
     name: hr-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: hr-worker
+          uri: lb://hr-worker
+          predicates:
+            - Path=/hr-worker/**
+        - id: hr-payroll
+          uri: lb://hr-payroll
+          predicates:
+            - Path=/hr-payroll/**
 
 eureka:
   client:
