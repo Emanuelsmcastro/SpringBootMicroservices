@@ -4,3 +4,12 @@ server:
 spring:
   application:
     name: hr-gateway
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://locahost:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    prefer-ip-address: true
+    hostname: localhost    
