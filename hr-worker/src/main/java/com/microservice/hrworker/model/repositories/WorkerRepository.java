@@ -6,5 +6,5 @@ import com.microservice.hrworker.model.entities.Worker;
 
 public interface WorkerRepository extends JpaRepository<Worker, Long>{
 	
-	public Worker findByName(String name);
+	public Worker findByNameIgnoreCase (String name);
 }

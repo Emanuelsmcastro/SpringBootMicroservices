@@ -20,7 +20,7 @@ public class WorkerService {
 	}
 	
 	public Worker findByName(String name) {
-		return rep.findByName(name);
+		return rep.findByNameIgnoreCase(name);
 	}
 	
 	public List<Worker> findAll(){
