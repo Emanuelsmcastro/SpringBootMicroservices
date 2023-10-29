@@ -28,6 +28,8 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.0.3'
 }
 
 tasks.named('test') {
