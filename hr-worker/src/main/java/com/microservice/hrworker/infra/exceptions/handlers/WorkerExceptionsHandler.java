@@ -11,10 +11,8 @@ import com.microservice.hrworker.infra.exceptions.ExceptionFormatter;
 import com.microservice.hrworker.infra.exceptions.WorkerNotFoundException;
 
 @ControllerAdvice
-public class WorkerExceptionsHandler extends RuntimeException {
+public class WorkerExceptionsHandler{
 
-	private static final long serialVersionUID = 1L;
-	
 	@ExceptionHandler(WorkerNotFoundException.class)
 	public ResponseEntity<?> workerNotFoundHandler(WorkerNotFoundException e){
 		HttpStatus status = HttpStatus.NOT_FOUND;

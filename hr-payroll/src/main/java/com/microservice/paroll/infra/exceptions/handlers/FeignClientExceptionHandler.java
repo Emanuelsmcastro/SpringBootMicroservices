@@ -12,10 +12,8 @@ import com.microservice.paroll.infra.exceptions.FeignClientNotFound;
 import com.microservice.paroll.infra.exceptions.ServiceConnectionException;
 
 @ControllerAdvice
-public class FeignClientExceptionHandler extends RuntimeException{
+public class FeignClientExceptionHandler{
 
-	private static final long serialVersionUID = 1L;
-	
 	@ExceptionHandler(FeignClientNotFound.class)
 	public ResponseEntity<?> feignNotFoundHandler(FeignClientNotFound e){
 		HttpStatus status = HttpStatus.NOT_FOUND;
