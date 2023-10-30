@@ -21,3 +21,8 @@ class ColorizingStreamHandler(logging.StreamHandler):
         record.msg = f"{self.color_map.get(record.levelno)}{record.msg}{Style.RESET_ALL}"
         return logging.StreamHandler.format(self, record)
 
+logger = logging.getLogger(__name__)
+handler = ColorizingStreamHandler(logging.StreamHandler())
+handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"))
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)

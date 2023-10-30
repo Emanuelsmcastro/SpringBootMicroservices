@@ -4,13 +4,8 @@ import os
 
 from managers import configManager
 
-from .log import ColorizingStreamHandler
+from .log import ColorizingStreamHandler, logger
 
-logger = logging.getLogger(__name__)
-handler = ColorizingStreamHandler(logging.StreamHandler())
-handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"))
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
 
 def getError():
     input("Press any key to exit...")
@@ -49,3 +44,4 @@ def loadConfigs():
 def runBuilder(cls):
     logger.info(f"Runner found: {cls.__name__}")
     runner = cls(loadConfigs())
+    runner.build()
