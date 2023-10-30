@@ -5,6 +5,18 @@ server:
 spring:
   application:
     name: hr-payroll
+  
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER_URL:http://localhost:8888/}${spring.application.name}
+      
+  config:
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888/}
+    import-check:
+      enabled: false
+  
+  profiles:
+    active: dev
     
 eureka:
   client:
@@ -26,7 +38,9 @@ resilience4j.circuitbreaker:
       waitDurationInOpenState: 5s
       failureRateThreshold: 50
       eventConsumerBufferSize: 10
-      
-secret:
-  token:
-    secret-key: ${SECRET_KEY:c2VjcmV0LWtleS1hdXRoZW50aWNhdGlvbi1zdGF0ZWxlc3Mtc3RhdGVmdWw=}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
