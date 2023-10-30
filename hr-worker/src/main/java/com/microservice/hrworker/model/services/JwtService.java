@@ -1,0 +1,67 @@
+package com.microservice.hrworker.model.services;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microservice.hrworker.infra.exceptions.AuthorizationException;
+import com.microservice.hrworker.infra.exceptions.ValidationException;
+import com.microservice.hrworker.model.dtos.UserResponse;
+import com.microservice.hrworker.model.entities.Role;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class JwtService {
+	private static final String SEPARATOR = " ";
+	private static final Integer TOKEN_INDEX = 1;
+	private final ObjectMapper mapper = new ObjectMapper();
+
+	@Value("${secret.token.secret-key}")
+	private String secretKey;
+
+	public UserResponse getAuthenticatedUser(String token) {
+		Claims tokenClaims = getClaims(token);
+		String username = (String) tokenClaims.get("username");
+		@SuppressWarnings("unchecked")
+		Set<Role> roles = (Set<Role>) mapper.convertValue(tokenClaims.get("roles"), Set.class).stream()
+				.map(object -> mapper.convertValue(object, Role.class)).collect(Collectors.toSet());
+		return new UserResponse(username, roles);
+	}
+
+	private SecretKey generateSign() {
+		return Keys.hmacShaKeyFor(secretKey.getBytes());
+	}
+
+	private Claims getClaims(String token) {
+		String accessToken = extractToken(token);
+		try {
+			return Jwts.parserBuilder().setSigningKey(generateSign()).build().parseClaimsJws(accessToken).getBody();
+
+		} catch (Exception e) {
+			throw new AuthorizationException("Invalid token: " + e.getMessage());
+		}
+	}
+
+	private String extractToken(String token) {
+		if (ObjectUtils.isEmpty(token))
+			throw new ValidationException("The access token was not informed.");
+		if (token.contains(SEPARATOR))
+			return token.split(SEPARATOR)[TOKEN_INDEX];
+		return token;
+	}
+
+}
