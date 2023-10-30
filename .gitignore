@@ -13,8 +13,9 @@
 # Eclipse
 .\metadata
 
-# Python venv
+# Python
 venv
+__pycache__
 
 # Package Files #
 *.jar
