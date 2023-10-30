@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,17 +23,17 @@ public class WorkerResource {
 	private final WorkerService service;
 	
 	@GetMapping
-	public ResponseEntity<List<Worker>> getAllWorkers(){
-		return ResponseEntity.ok().body(service.findAll());
+	public ResponseEntity<List<Worker>> getAllWorkers(@RequestHeader String token){
+		return ResponseEntity.ok().body(service.findAll(token));
 	}
 	
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Worker> findById(@PathVariable Long id){
-		return ResponseEntity.ok().body(service.findById(id));
+	public ResponseEntity<Worker> findById(@PathVariable Long id, @RequestHeader String token){
+		return ResponseEntity.ok().body(service.findById(id, token));
 	}
 	
 	@GetMapping(value = "/search")
-	public ResponseEntity<Worker> findByName(@RequestParam String name){
-		return ResponseEntity.ok().body(service.findByName(name));
+	public ResponseEntity<Worker> findByName(@RequestParam String name, @RequestHeader String token){
+		return ResponseEntity.ok().body(service.findByName(name, token));
 	}
 }
