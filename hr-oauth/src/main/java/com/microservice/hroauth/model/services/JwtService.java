@@ -17,15 +17,12 @@ import com.microservice.hroauth.infra.exceptions.AuthorizationException;
 import com.microservice.hroauth.model.dtos.AuthUser;
 import com.microservice.hroauth.model.entities.Role;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class JwtService {
 	
