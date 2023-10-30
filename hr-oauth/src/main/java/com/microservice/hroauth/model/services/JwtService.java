@@ -11,6 +11,7 @@ import javax.crypto.SecretKey;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
 import com.microservice.hroauth.infra.exceptions.AuthorizationException;
@@ -23,6 +24,7 @@ import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@RefreshScope
 @RequiredArgsConstructor
 public class JwtService {
 	
