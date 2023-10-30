@@ -1,12 +1,12 @@
 package com.microservice.hrworker.model.services;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -20,10 +20,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
+@RefreshScope
 @RequiredArgsConstructor
 public class JwtService {
 	private static final String SEPARATOR = " ";
