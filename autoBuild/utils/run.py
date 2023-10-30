@@ -16,6 +16,7 @@ def getError():
     input("Press any key to exit...")
     exit()
 
+
 def importSettings(moduleName: str, settingsDir: str):
     try:
         fullPathSettings = os.path.join(settingsDir, moduleName + '.py')
@@ -29,7 +30,6 @@ def importSettings(moduleName: str, settingsDir: str):
         getError()
     
     
-
 def getEnvOrError(key: str):
     value = os.getenv(key)
     if not value:
@@ -44,6 +44,7 @@ def loadConfigs():
     configModule = getEnvOrError('BUILDER_SETTINGS_MODULE')
     configDir = getEnvOrError("DEFAULT_SETTINGS_DIR")
     return importSettings(configModule, configDir)
+
 
 def runBuilder(cls):
     logger.info(f"Runner found: {cls.__name__}")
