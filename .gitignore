@@ -13,6 +13,9 @@
 # Eclipse
 .\metadata
 
+# Python venv
+venv
+
 # Package Files #
 *.jar
 *.war
