@@ -4,24 +4,19 @@ server:
 spring:
   application:
     name: hr-worker
-
-  datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password: 
-  
-  jpa:
-    hibernate:
-      ddl-auto: create-drop # Default is none
-    show-sql: true # Debug sql queries
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+    
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER_URL:http://localhost:8888/}${spring.application.name}
       
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+  config:
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888/}
+    import-check:
+      enabled: false
+  
+  profiles:
+    active: dev
+
 
 eureka:
   client:
@@ -31,7 +26,9 @@ eureka:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     preferIpAddress: true
     hostname: localhost
-    
-secret:
-  token:
-    secret-key: ${SECRET_KEY:c2VjcmV0LWtleS1hdXRoZW50aWNhdGlvbi1zdGF0ZWxlc3Mtc3RhdGVmdWw=}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
