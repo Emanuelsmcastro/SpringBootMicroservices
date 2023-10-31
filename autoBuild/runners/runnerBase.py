@@ -133,7 +133,6 @@ class RunnerBase:
                     if content.startswith("COPY"):
                         jar = [jar for jar in list(dockerFile.parent.glob(self.buildJarPattern)) if not jar.name.__contains__(self.excludeBuildJarPattern)]
                         newPath = self.buildPath / jar[0].name
-                        print(newPath.as_posix())
                         newLine = f'COPY {newPath.as_posix()} {self.buildJar}'
                         if self.DEBUG:
                             logger.info(f'Found target line: {content}')
