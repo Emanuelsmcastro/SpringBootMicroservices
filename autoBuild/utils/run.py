@@ -42,6 +42,7 @@ def loadConfigs():
 
 
 def runBuilder(cls):
+    os.system('cls' if os.name == 'nt' else 'clear')
     logger.info(f"Runner found: {cls.__name__}")
     runner = cls(loadConfigs())
     runner.build()
