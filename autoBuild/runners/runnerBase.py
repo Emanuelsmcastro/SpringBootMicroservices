@@ -1,6 +1,7 @@
 import asyncio
 import subprocess
 import time
+from datetime import datetime
 from pathlib import Path
 
 import aiofiles
@@ -10,8 +11,14 @@ from utils.log import logger
 class RunnerBase:
     
     DEBUG = True
+    performBackup = True
     gradleBuildPattern = "**/build.gradle"
     dockerFileName = "Dockerfile"
+    buildJarPattern = "**/build/libs/*.jar"
+    buildJar = "app.jar"
+    excludeBuildJarPattern = "-plain"
+    buildPath: Path = Path('./build/libs')
+    
     
     gradleList = []
     gradleWarns = 0
@@ -38,6 +45,7 @@ class RunnerBase:
     def build(self):
         loop = asyncio.get_event_loop()
         try:
+            self.__preparerBuildJarsBackup(loop)
             loop.run_until_complete(self.__buildGradle())
             loop.run_until_complete(self.__updateDockerFile())
         except Exception as e:
@@ -48,15 +56,48 @@ class RunnerBase:
             self.__cleaningUp(loop)
         finally:
             loop.close()
-            
+    
+    def __preparerBuildJarsBackup(self, loop: asyncio.AbstractEventLoop):
+        logger.info(f'Perfom Backup: {self.performBackup}')
+        jars = self.settings.ROOT_DIR.glob(self.buildJarPattern)
+        if any(jars):
+            if self.performBackup:
+                logger.info("Jars found, starting backup...")
+                parentPath = self.settings.ROOT_DIR
+                backupPath: Path = parentPath / Path("backup")
+                backupPath.mkdir(parents=True, exist_ok=True)
+                nowDir = backupPath / Path(datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+                nowDir.mkdir(parents=True, exist_ok=True)
+            else:
+                logger.info("Jars found, starting cleaning...")
+            futures = [loop.run_in_executor(None, self.__buildJarMakeBackup, jar, nowDir) for jar in jars]
+            loop.run_until_complete(asyncio.gather(*futures))
+            logger.info("No Jars found, backup or cleaning will not be done...")
+    
+    def __buildJarMakeBackup(self, jar: Path, nowDir: Path):
+        if self.DEBUG:
+            logger.info(f'Found jar: {jar}')
+        if self.performBackup:
+            jarName = jar.name
+            jar.rename(nowDir / Path(jarName))
+        else:
+            jar.unlink(missing_ok=True)
+        
+        
     def __cleaningUp(self, loop):
         logger.info("Cleaning up")
         pending_tasks = [
             task for task in asyncio.all_tasks(loop) if not task.done()
         ]
         for process in self.processes:
-            process.terminate()
+            try:
+                process.terminate()
+            except Exception as e:
+                logger.exception(f"An error occurred: {e}")
+            except KeyboardInterrupt:
+                logger.exception(f"KeyboardInterrupt in cleaningUp")
         loop.run_until_complete(asyncio.gather(*pending_tasks))
+
         
     def __findGradles(self):
         path: Path = self.settings.ROOT_DIR
@@ -79,12 +120,31 @@ class RunnerBase:
         logger.warning(f'{"Warnins count":<14}: {warns:<3}')
         logger.error(f'{"Errors count":<14}: {erros:<3}')
         
+    async def __writeDockerFile(self, dockerFile: Path, newLines: str):
+        async with aiofiles.open(dockerFile, mode='w') as file:
+            await file.write(newLines)
         
     async def __openDockerFile(self, dockerFile: Path):
         async with aiofiles.open(dockerFile, mode='r+') as file:
-            contents = await file.read()
-            logger.info(f'Found content: {contents}')
-            return dockerFile
+            try:
+                contents = await file.read()
+                contentList = contents.split('\n')
+                for i, content in enumerate(contentList):
+                    if content.startswith("COPY"):
+                        jar = [jar for jar in list(dockerFile.parent.glob(self.buildJarPattern)) if not jar.name.__contains__(self.excludeBuildJarPattern)]
+                        newPath = self.buildPath / jar[0].name
+                        print(newPath.as_posix())
+                        newLine = f'COPY {newPath.as_posix()} {self.buildJar}'
+                        if self.DEBUG:
+                            logger.info(f'Found target line: {content}')
+                            logger.info(f'Replace by: {newLine}')
+                        contentList[i] = newLine
+                    newContents = '\n'.join(contentList)
+            except Exception as e:
+                logger.error(f'An error occurred: {e}')
+            finally:
+                await self.__writeDockerFile(dockerFile, newContents)
+                return dockerFile
     
     async def __updateDockerFile(self):
         logger.info("Start update Dockerfile")
