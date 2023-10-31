@@ -4,7 +4,7 @@ import os
 
 from managers import configManager
 
-from .log import ColorizingStreamHandler, logger
+from .log import logger
 
 
 def getError():
