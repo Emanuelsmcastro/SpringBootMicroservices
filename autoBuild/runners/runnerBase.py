@@ -24,8 +24,6 @@ class RunnerBase:
             logger.info(f'Gradle found: {gradle}')
             self.gradleList.append(gradle)
     
-            
-    
     async def __buildGradle(self):
         tasks = []
         self.__findGradles()
