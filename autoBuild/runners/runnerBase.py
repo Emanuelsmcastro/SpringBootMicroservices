@@ -77,7 +77,7 @@ class RunnerBase:
     def __buildJarMakeBackup(self, jar: Path, nowDir: Path):
         if self.DEBUG:
             logger.info(f'Found jar: {jar}')
-        if self.performBackup:
+        if self.performBackup and not jar.name.__contains__(self.excludeBuildJarPattern):
             jarName = jar.name
             jar.rename(nowDir / Path(jarName))
         else:
