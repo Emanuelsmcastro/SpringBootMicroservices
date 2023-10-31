@@ -22,10 +22,13 @@ class RunnerBase:
     
     gradleList = []
     gradleWarns = 0
-    gradlErrors = 0
+    gradleErrors = 0
     gradleSuccess = 0
     
     dockerFileList = []
+    dockerFileWarns = 0
+    dockerFileErrors = 0
+    dockerFileSuccess = 0
     
     processes = []
     
@@ -116,7 +119,8 @@ class RunnerBase:
             logger.warning(f'Dockerfile is missing: {dockerFile}')
             self.gradleWarns += 1
             
-    def showInf(self, warns, erros):
+    def showInf(self, warns, erros, success):
+        logger.info(f'{"Success count":<14}: {success:<3}')
         logger.warning(f'{"Warnins count":<14}: {warns:<3}')
         logger.error(f'{"Errors count":<14}: {erros:<3}')
         
@@ -138,11 +142,13 @@ class RunnerBase:
                             logger.info(f'Found target line: {content}')
                             logger.info(f'Replace by: {newLine}')
                         contentList[i] = newLine
+                        self.dockerFileSuccess += 1
                     newContents = '\n'.join(contentList)
+                await self.__writeDockerFile(dockerFile, newContents)
             except Exception as e:
                 logger.error(f'An error occurred: {e}')
+                self.dockerFileErrors += 1
             finally:
-                await self.__writeDockerFile(dockerFile, newContents)
                 return dockerFile
     
     async def __updateDockerFile(self):
@@ -153,10 +159,13 @@ class RunnerBase:
             task = asyncio.create_task(self.__openDockerFile(dockerFile), name=taskName)
             tasks.append(task)
             logger.info(f'Prepare task: {taskName}')
+            self.dockerFileSuccess += 1
         
         for task in asyncio.as_completed(tasks):
             result = await task
             logger.info(f'Finished: {result}')
+            self.dockerFileSuccess += 1
+        self.showInf(self.dockerFileWarns, self.dockerFileErrors, self.dockerFileSuccess)
     
     async def __buildGradle(self):
         tasks = []
@@ -173,7 +182,7 @@ class RunnerBase:
             logger.info(f'Finished: {result}')
             self.gradleSuccess += 1
             self.__findDockerFile(result)
-        self.showInf(self.gradleWarns, self.gradlErrors)
+        self.showInf(self.gradleWarns, self.gradleErrors, self.gradleSuccess)
         logger.info(f'Finished gradle build !')
             
     async def __getGradle(self, gradle):
@@ -196,7 +205,7 @@ class RunnerBase:
                 self.gradleSuccess += 1
             if stderr:
                 logger.error(f'[stderr]\n{stderr.decode()}')
-                self.gradlErrors += 1
+                self.gradleErrors += 1
         else:
             while True:
                 output = await process.stdout.readline()
