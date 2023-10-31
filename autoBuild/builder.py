@@ -1,6 +1,7 @@
 from runners.runnerBase import RunnerBase
 from utils.run import runBuilder
 
+
 @runBuilder
 class BuildGradleAndCreateContainer(RunnerBase):
     
@@ -8,5 +9,4 @@ class BuildGradleAndCreateContainer(RunnerBase):
         super().__init__(settings)
 
     def build(self):
-        print(self.settings)
-        pass
+        super().build()
