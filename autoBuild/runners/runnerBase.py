@@ -1,5 +1,6 @@
 import asyncio
 import subprocess
+import time
 from pathlib import Path
 
 import aiofiles
@@ -24,6 +25,16 @@ class RunnerBase:
     def __init__(self, settings) -> None:
         self.settings: Path = settings
         
+    def timer(func):
+        def wrapper(self, *args, **kwargs):
+            startTime = time.time()
+            result = func(self, *args, **kwargs)
+            endTime = time.time()
+            logger.info(f'Elapsed time | {func.__name__}: {endTime - startTime:.2f}s')
+            return result
+        return wrapper
+    
+    @timer
     def build(self):
         loop = asyncio.get_event_loop()
         try:
