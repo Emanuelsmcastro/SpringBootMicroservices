@@ -1,0 +1,358 @@
+{
+	"info": {
+		"_postman_id": "62d7f088-36e7-4fa1-9381-41804fedc682",
+		"name": "MicroserviceProject",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30469499"
+	},
+	"item": [
+		{
+			"name": "hr-worker",
+			"item": [
+				{
+					"name": "Get All Workers",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api-gateway}}/hr-worker/api/v1/workers",
+							"host": [
+								"{{api-gateway}}"
+							],
+							"path": [
+								"hr-worker",
+								"api",
+								"v1",
+								"workers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Worker By ID",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{api-gateway}}/hr-worker/api/v1/workers/1",
+							"host": [
+								"{{api-gateway}}"
+							],
+							"path": [
+								"hr-worker",
+								"api",
+								"v1",
+								"workers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Worker By Name",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-gateway}}/hr-worker/api/v1/workers/search?name=carl",
+							"host": [
+								"{{api-gateway}}"
+							],
+							"path": [
+								"hr-worker",
+								"api",
+								"v1",
+								"workers",
+								"search"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "carl"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Configs",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api-gateway}}/hr-worker/actuator/refresh",
+							"host": [
+								"{{api-gateway}}"
+							],
+							"path": [
+								"hr-worker",
+								"actuator",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "hr-payroll",
+			"item": [
+				{
+					"name": "Get Payment",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-gateway}}/hr-payroll/api/v1/payments/get/2?days=30",
+							"host": [
+								"{{api-gateway}}"
+							],
+							"path": [
+								"hr-payroll",
+								"api",
+								"v1",
+								"payments",
+								"get",
+								"2"
+							],
+							"query": [
+								{
+									"key": "days",
+									"value": "30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Configs",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api-gateway}}/hr-payroll/actuator/refresh",
+							"host": [
+								"{{api-gateway}}"
+							],
+							"path": [
+								"hr-payroll",
+								"actuator",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "hr-oauth",
+			"item": [
+				{
+					"name": "Get Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if(responseCode.code >= 200 && responseCode.code < 300){\r",
+									"    const json = JSON.parse(responseBody);\r",
+									"    postman.setEnvironmentVariable('token', json.accessToken);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-gateway}}/hr-oauth/api/v1/auth/login",
+							"host": [
+								"{{api-gateway}}"
+							],
+							"path": [
+								"hr-oauth",
+								"api",
+								"v1",
+								"auth",
+								"login"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Carl",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Token",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "{{token}}",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-gateway}}/hr-oauth/api/v1/auth/token/validate",
+							"host": [
+								"{{api-gateway}}"
+							],
+							"path": [
+								"hr-oauth",
+								"api",
+								"v1",
+								"auth",
+								"token",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Configs Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api-gateway}}/hr-oauth/actuator/refresh",
+							"host": [
+								"{{api-gateway}}"
+							],
+							"path": [
+								"hr-oauth",
+								"actuator",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
