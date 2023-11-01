@@ -51,6 +51,8 @@ class RunnerBase:
             self.__preparerBuildJarsBackup(loop)
             loop.run_until_complete(self.__buildGradle())
             loop.run_until_complete(self.__updateDockerFile())
+            loop.run_until_complete(self.__execCommand(f'cd {self.settings.ROOT_DIR} && docker-compose down -v'))
+            loop.run_until_complete(self.__execCommand(f'cd {self.settings.ROOT_DIR} && docker-compose up --build -d'))
         except Exception as e:
             logger.exception(f'An error occurred: {e}')
             self.__cleaningUp(loop)
@@ -112,7 +114,7 @@ class RunnerBase:
     def __findDockerFile(self, gradle: Path):
         dockerFile: Path = gradle.parent / Path(self.dockerFileName)
         if dockerFile.exists():
-            logger.info(f'Dockerfile found: {dockerFile}')
+            logger.debug(f'Dockerfile found: {dockerFile}')
             self.gradleSuccess += 1
             self.dockerFileList.append(dockerFile)
         else:
@@ -140,7 +142,7 @@ class RunnerBase:
                         newLine = f'COPY {newPath.as_posix()} {self.buildJar}'
                         if self.DEBUG:
                             logger.info(f'Found target line: {content}')
-                            logger.info(f'Replace by: {newLine}')
+                            logger.debug(f'Replace by: {newLine}')
                         contentList[i] = newLine
                         self.dockerFileSuccess += 1
                         break
@@ -159,7 +161,7 @@ class RunnerBase:
             taskName = dockerFile.parent.name + " | " +  self.dockerFileName
             task = asyncio.create_task(self.__openDockerFile(dockerFile), name=taskName)
             tasks.append(task)
-            logger.info(f'Prepare task: {taskName}')
+            logger.debug(f'Prepare task: {taskName}')
             self.dockerFileSuccess += 1
         
         for task in asyncio.as_completed(tasks):
@@ -175,7 +177,7 @@ class RunnerBase:
             taskName = gradle.parent.name
             task = asyncio.create_task(self.__getGradle(gradle), name=taskName)
             tasks.append(task)
-            logger.info(f'Prepare task: {taskName}')
+            logger.debug(f'Prepare task: {taskName}')
             self.gradleSuccess += 1
         
         for task in asyncio.as_completed(tasks):
@@ -193,7 +195,7 @@ class RunnerBase:
         
     async def __execBuildGradle(self, gradle: Path) -> None:
         command = f'cd {gradle.parent} && gradle build'
-        logger.info(f'Apply: {command}')
+        logger.debug(f'Apply: {command}')
         process = await asyncio.create_subprocess_shell(
             command, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
@@ -215,3 +217,29 @@ class RunnerBase:
                 elif process.stdout.at_eof():
                     break
         return gradle
+    
+    async def __execCommand(self, command) -> None:
+        logger.info(f'Apply: {command}')
+        process = await asyncio.create_subprocess_shell(
+            command, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        self.processes.append(process)
+        if not self.DEBUG:
+            stdout, stderr = await process.communicate()
+            if stdout:
+                logger.info(f'[stdout]\n{stdout.decode()}')
+                self.gradleSuccess += 1
+            if stderr:
+                logger.error(f'[stderr]\n{stderr.decode()}')
+                self.gradleErrors += 1
+        else:
+            while True:
+                output = await process.stdout.readline()
+                stderr = await process.stderr.readline()
+                if output:
+                    logger.info(f'{output.decode().strip()}')
+                if stderr:
+                    logger.debug(f'{stderr.decode().strip()}')
+                elif process.stdout.at_eof():
+                    break
