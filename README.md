@@ -48,3 +48,20 @@ public interface WorkerFeignClient {
 
 ## Build e Dockerizing 
 >Foi utilizado um projeto de gradle build feito em python criado por mim, está fora do escopo desse projeto detalhar o funcionamento do mesmo. Porém ele basicamente detecta os arquivos "build.gradle" que estãos nos microsserviços, builda os mesmos e pega o nome do .jar criado e atualiza no Dockerfile. Após isso ele executa o **docker-compose up --build -d** na raiz do projeto onde está localizado o arquivo "docker-compose.yml".
+
+**Versão do python e Venv**                                                                                                
+![image](https://github.com/Emanuelsmcastro/SpringBootMicroservices/assets/93106680/52bf7c2d-16c7-4132-b84a-e5ebdf8934e7)
+
+**Rodando o builder**                                                                                                                   
+![image](https://github.com/Emanuelsmcastro/SpringBootMicroservices/assets/93106680/90f855b0-c1f8-4f7b-b8a4-137702effb79)
+
+**Resultado**
+![image](https://github.com/Emanuelsmcastro/SpringBootMicroservices/assets/93106680/48770217-db05-46bf-acf2-fd5b18f3a149)
+![image](https://github.com/Emanuelsmcastro/SpringBootMicroservices/assets/93106680/c20b6e3f-fb11-44e0-80ff-88e4383f43b6)
+![image](https://github.com/Emanuelsmcastro/SpringBootMicroservices/assets/93106680/91b23f70-3309-4598-a3a4-b8062108a1a2)
+![image](https://github.com/Emanuelsmcastro/SpringBootMicroservices/assets/93106680/a7b682d0-ab79-47a5-b16f-196fff6e7fba)
+
+
+
+
+
