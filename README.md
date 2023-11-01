@@ -23,7 +23,7 @@
 -  Actuator
 
 ## Sobre
->Esse projeto utiliza a estrutura de microsserviços utilizando a arquitetura MVC(Model-View-Controller) para disponibilizar o acesso à informações sobre os trabalhadores de uma empresa fictícia. Nesse sistema é possível obter um trabalhador e seu pagamento, ambos sendo microsservições separados porém com dependência entre o microsserviço de pagamento para com o microsserviço de trabalhadores.
+>Esse projeto utiliza a estrutura de microsserviços utilizando a arquitetura MVC(Model-View-Controller) para disponibilizar o acesso à informações sobre os trabalhadores de uma empresa fictícia. Nesse sistema é possível obter um trabalhador e seu pagamento, ambos sendo microsserviços separados porém com dependência entre o microsserviço de pagamento para com o microsserviço de trabalhadores.
 
 >Nesse sistema também há um microsserviço de authenticação o "hr-oauth" responsável por ser o servidor de autenticação disponibilizando um token JWT, permitindo assim o acesso para os microsserviços. Sendo limitado apenas pela role do usuário, por exemplo, um usuário só pode ter acesso ao pagamento de um trabalhador se ele tiver a permissão "ROLE_ADMIN".
 
