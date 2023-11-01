@@ -1,0 +1,126 @@
+version: "3"
+
+services:
+  hr-eureka:
+    build: hr-eureka/
+    container_name: hr-eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - ms_network
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    command: java -jar app.jar
+
+  hr-config-server:
+    build: hr-config-server/
+    container_name: hr-config-server
+    ports:
+      - "8888:8888"
+    networks:
+      - ms_network
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    command: java -jar app.jar
+
+  hr-gateway:
+    build: hr-gateway/
+    container_name: hr-gateway
+    environment:
+      - EUREKA_SERVER_HOST=hr-eureka
+      - EUREKA_SERVER_PORT=8761
+      - HOST_NAME=hr-eureka
+    restart: on-failure
+    depends_on:
+      - hr-eureka
+    ports:
+      - "8765:8765"
+    networks:
+      - ms_network
+    links:
+      - hr-eureka
+    command: >
+      bash -c "
+      java -jar app.jar
+      "
+
+  hr-oauth:
+    build: hr-oauth/
+    container_name: hr-oauth
+    environment:
+      - EUREKA_SERVER_HOST=hr-eureka
+      - EUREKA_SERVER_PORT=8761
+      - CONFIG_SERVER_HOST=hr-config-server
+      - CONFIG_SERVER_PORT=8888
+      - HOST_NAME=hr-eureka
+    restart: on-failure
+    depends_on:
+      - hr-eureka
+      - hr-config-server
+    networks:
+      - ms_network
+    links:
+      - hr-eureka
+      - hr-config-server
+    command: >
+      bash -c "
+      java -jar app.jar
+      "
+
+  hr-payroll:
+    build: hr-payroll/
+    container_name: hr-payroll
+    environment:
+      - EUREKA_SERVER_HOST=hr-eureka
+      - EUREKA_SERVER_PORT=8761
+      - CONFIG_SERVER_HOST=hr-config-server
+      - CONFIG_SERVER_PORT=8888
+      - HOST_NAME=hr-eureka
+    restart: on-failure
+    depends_on:
+      - hr-eureka
+      - hr-config-server
+    networks:
+      - ms_network
+    links:
+      - hr-eureka
+      - hr-config-server
+    command: >
+      bash -c "
+      java -jar app.jar
+      "
+
+  hr-worker:
+    build: hr-worker/
+    container_name: hr-worker
+    environment:
+      - EUREKA_SERVER_HOST=hr-eureka
+      - EUREKA_SERVER_PORT=8761
+      - CONFIG_SERVER_HOST=hr-config-server
+      - CONFIG_SERVER_PORT=8888
+      - HOST_NAME=hr-eureka
+    restart: on-failure
+    depends_on:
+      - hr-eureka
+      - hr-config-server
+    networks:
+      - ms_network
+    links:
+      - hr-eureka
+      - hr-config-server
+    command: >
+      bash -c "
+      java -jar app.jar
+      "
+
+networks:
+  ms_network:
+    driver: bridge
