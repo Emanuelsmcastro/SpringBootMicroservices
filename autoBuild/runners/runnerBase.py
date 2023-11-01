@@ -143,6 +143,7 @@ class RunnerBase:
                             logger.info(f'Replace by: {newLine}')
                         contentList[i] = newLine
                         self.dockerFileSuccess += 1
+                        break
                     newContents = '\n'.join(contentList)
                 await self.__writeDockerFile(dockerFile, newContents)
             except Exception as e:
