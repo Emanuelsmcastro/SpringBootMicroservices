@@ -8,7 +8,11 @@ services:
       - "8761:8761"
     networks:
       - ms_network
-    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:15672"]
       interval: 30s
@@ -23,7 +27,11 @@ services:
       - "8888:8888"
     networks:
       - ms_network
-    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:15672"]
       interval: 30s
@@ -38,7 +46,11 @@ services:
       - EUREKA_SERVER_HOST=hr-eureka
       - EUREKA_SERVER_PORT=8761
       - HOST_NAME=hr-eureka
-    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
     depends_on:
       - hr-eureka
     ports:
@@ -61,7 +73,11 @@ services:
       - CONFIG_SERVER_HOST=hr-config-server
       - CONFIG_SERVER_PORT=8888
       - HOST_NAME=hr-eureka
-    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
     depends_on:
       - hr-eureka
       - hr-config-server
@@ -84,7 +100,11 @@ services:
       - CONFIG_SERVER_HOST=hr-config-server
       - CONFIG_SERVER_PORT=8888
       - HOST_NAME=hr-eureka
-    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
     depends_on:
       - hr-eureka
       - hr-config-server
@@ -107,7 +127,11 @@ services:
       - CONFIG_SERVER_HOST=hr-config-server
       - CONFIG_SERVER_PORT=8888
       - HOST_NAME=hr-eureka
-    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
     depends_on:
       - hr-eureka
       - hr-config-server
